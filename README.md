@@ -9,9 +9,10 @@ You must be using Python 2.7 and Mac OSX. This should also work for various Linu
 #####Packages
 1. Flask
 2. Skype4Py-Must be installed on all Skype client computers (or only callers if you decide to use autoanswer=False More on that in Installation)
+3. pymongo-Needed to keep track of active calls
 
 # INSTALLATION AND SETUP
 
 1. The first step is to setup the Flask server on your local network. It can then be run simply by using 'python gui.py'. The server by default is set to run on port 5000, but that can be changed in the gui.py file (see [Flask documentation](http://flask.pocoo.org/docs/) for more detail).
 
-2. 
+2. Next, a decision must be made as to whether or not you will be running in 'autoanswer' mode.

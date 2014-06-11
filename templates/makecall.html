@@ -1,0 +1,23 @@
+<html>
+
+
+<body>
+	<form action="" method="POST">
+		<label>Caller:  </label>
+		<select name="caller" width="300px">
+			{% for caller in callers %}
+				<option name="{{ caller }}">{{ caller }}</option>
+			{% endfor %}
+		</select>
+		<br>
+		<label>Reciever:  </label>
+		<select name="receiver" width="300px">
+			{% for receiver in receivers %}
+				<option name="{{ receiver }}">{{ receiver }}</option>
+			{% endfor %}
+		</select>
+		<br>
+		<input type="submit" value="Select">
+	</form>
+</body>
+</html>

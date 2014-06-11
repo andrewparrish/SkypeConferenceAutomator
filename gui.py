@@ -3,18 +3,37 @@ import subprocess
 import Skype4Py
 import config
 import paramiko
+from pymongo import MongoClient
 
 app = Flask(__name__)
 
-@app.route('/', methods=["GET", "POST"])
-def homepage():
-	#proc = subprocess.call(['arch', '-i386', "python", "makecall.py"])
+client = MongoClient()
+db = client[config.dbname]
 
-	contacts = config.accesses.keys()
+@app.route('/makecall', methods=["GET", "POST"])
+def makecall():
+
+	if config.autoanswer:
+		callers = []
+		for key in config.accesses.keys():
+			if config.accesses[key]['local']:
+				callers.append(key)
+		receivers = config.accesses.keys()
+	else:
+		callers = config.accesses.keys()
+		receivers = callers
 
 	if request.method == 'POST':
 		caller = request.form['caller']
-		reciever = request.form['reciever']
+		reciever = request.form['receiver']
+
+		call = {
+			'caller' : caller,
+			'receiver' : reciever,
+			'status' : 'live'
+		}
+
+		call = db['calls'].insert(call)
 
 		acc = config.accesses[reciever]
 		calleracc = config.accesses[caller]
@@ -37,31 +56,63 @@ def homepage():
 			executeorder(calleracc, command)
 
 
-		return redirect('/endcall')
+		return redirect('/calls')
 
-	return render_template('homepage.html', contacts=contacts)
+	return render_template('makecall.html', callers=callers, receivers=receivers)
 
-@app.route('/endcall', methods=["GET", "POST"])
-def endcall():
+@app.route('/calls', methods=["GET", "POST"])
+def calls():
 
-	contacts = config.accesses.keys()
+	calls = db['calls'].find()
 
-	if request.method == 'POST':
-		caller = request.form['caller']
-		reciever = request.form['reciever']
-		acc = config.accesses[reciever]
-		calleracc = config.accesses[caller]
+	return render_template('calls.html', calls=calls)
+
+@app.route('/endcall/<caller>')
+def endcall(caller):
+
+	call = db['calls'].find({'caller' : caller})
+	acc = config.accesses[call['reciever']]
+	calleracc = config.accesses[call['caller']]
+
+	command = "arch -i386 /usr/bin/python2.7 skype/endcall.py \'%s\'" % acc['skypename']
+	executeorder(calleracc, command)
+
+	if not config.autoanswer:
+		command = "killall Python"
+		executeorder(acc, command)
+
+	db['calls'].remove({'caller': caller})
+	return redirect('/calls')
+
+@app.route('/holdcall/<caller>')
+def holdcall(caller):
+
+	call = db['calls'].find({'caller' : caller})
+	acc = config.accesses[call['reciever']]
+	calleracc = config.accesses[call['caller']]
+
+	command = "arch -i386 /usr/bin/python2.7 skype/holdcall.py \'%s\'" % acc['skypename']
+	executeorder(calleracc, command)
+
+	if call['status'] == 'live':
+		call = {
+			'caller' : caller,
+			'receiver' : reciever,
+			'status' : 'hold'
+		}
+		db['calls'].remove({'caller': caller})
+		db['calls'].insert(call)
+	else:
+		call = {
+			'caller' : caller,
+			'receiver' : reciever,
+			'status' : 'live'
+		}
+		db['calls'].remove({'caller': caller})
+		db['calls'].insert(call)
+	return redirect('/calls')
 
 
-		command = "arch -i386 /usr/bin/python2.7 skype/endcall.py \'%s\'" % acc['skypename']
-		executeorder(calleracc, command)
-
-		if not config.autoanswer:
-			command = "killall Python"
-			executeorder(acc, command)
-
-		return Response("Call Complete")
-	return render_template('homepage.html', contacts=contacts)
 
 def executeorder(acc, command):
 	ssh = paramiko.SSHClient()
@@ -82,6 +133,7 @@ def filecheck(acc):
 		sftp.put('autoanswer.py', 'autoanswer.py')
 		sftp.put('makecall.py', 'makecall.py')
 		sftp.put('endcall.py', 'endcall.py')
+		sftp.put('holdcall.py', 'holdcall.py')
 	sftp.close
 	
 
