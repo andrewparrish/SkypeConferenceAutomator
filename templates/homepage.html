@@ -1,0 +1,23 @@
+<html>
+
+
+<body>
+	<form action="" method="POST">
+		<label>Caller:  </label>
+		<select name="caller" width="300px">
+			{% for contact in contacts %}
+				<option name="{{ contact }}">{{ contact }}</option>
+			{% endfor %}
+		</select>
+		<br>
+		<label>Reciever:  </label>
+		<select name="reciever" width="300px">
+			{% for contact in contacts %}
+				<option name="{{ contact }}">{{ contact }}</option>
+			{% endfor %}
+		</select>
+		<br>
+		<input type="submit" value="Select">
+	</form>
+</body>
+</html>
