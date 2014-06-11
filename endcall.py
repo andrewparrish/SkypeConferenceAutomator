@@ -5,5 +5,6 @@ skype = Skype4Py.Skype()
 
 skype.Attach()
 
-if skype.ActiveCalls[0].PartnerHandle == sys.argv[1]:
-	skype.ActiveCalls[0].Finish()
+if len(skype.ActiveCalls) > 0:
+	if skype.ActiveCalls[0].PartnerHandle == sys.argv[1]:
+		skype.ActiveCalls[0].Finish()

@@ -16,10 +16,10 @@ def homepage():
 		caller = request.form['caller']
 		reciever = request.form['reciever']
 
-		if not config.autoanswer:
+		acc = config.accesses[reciever]
+		calleracc = config.accesses[caller]
 
-			acc = config.accesses[reciever]
-			calleracc = config.accesses[caller]
+		if not config.autoanswer:
 
 			filecheck(acc)
 			filecheck(calleracc)
@@ -29,8 +29,13 @@ def homepage():
 
 			command = "arch -i386 /usr/bin/python2.7 skype/makecall.py \'%s\'" % acc['skypename']
 			executeorder(calleracc, command)
+		else:
 
-		
+			filecheck(calleracc)
+
+			command = "arch -i386 /usr/bin/python2.7 skype/makecall.py \'%s\'" % acc['skypename']
+			executeorder(calleracc, command)
+
 
 		return redirect('/endcall')
 
@@ -51,8 +56,9 @@ def endcall():
 		command = "arch -i386 /usr/bin/python2.7 skype/endcall.py \'%s\'" % acc['skypename']
 		executeorder(calleracc, command)
 
-		command = "killall Python"
-		executeorder(acc, command)
+		if not config.autoanswer:
+			command = "killall Python"
+			executeorder(acc, command)
 
 		return Response("Call Complete")
 	return render_template('homepage.html', contacts=contacts)
