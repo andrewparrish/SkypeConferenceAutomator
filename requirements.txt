@@ -1,0 +1,10 @@
+Flask==0.10.1
+Jinja2==2.7.3
+MarkupSafe==0.23
+Skype4Py==1.0.35
+Werkzeug==0.9.6
+ecdsa==0.11
+itsdangerous==0.24
+paramiko==1.14.0
+pycrypto==2.6.1
+wsgiref==0.1.2

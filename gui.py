@@ -15,17 +15,22 @@ def homepage():
 	if request.method == 'POST':
 		caller = request.form['caller']
 		reciever = request.form['reciever']
-		acc = config.accesses[reciever]
-		calleracc = config.accesses[caller]
 
-		filecheck(acc)
-		filecheck(calleracc)
+		if not config.autoanswer:
 
-		command = "arch -i386 /usr/bin/python2.7 skype/autoanswer.py \'%s\'" % calleracc['skypename']
-		executeorder(acc, command)
+			acc = config.accesses[reciever]
+			calleracc = config.accesses[caller]
 
-		command = "arch -i386 /usr/bin/python2.7 skype/makecall.py \'%s\'" % acc['skypename']
-		executeorder(calleracc, command)
+			filecheck(acc)
+			filecheck(calleracc)
+
+			command = "arch -i386 /usr/bin/python2.7 skype/autoanswer.py \'%s\'" % calleracc['skypename']
+			executeorder(acc, command)
+
+			command = "arch -i386 /usr/bin/python2.7 skype/makecall.py \'%s\'" % acc['skypename']
+			executeorder(calleracc, command)
+
+		
 
 		return redirect('/endcall')
 
