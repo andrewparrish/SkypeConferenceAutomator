@@ -39,5 +39,8 @@ You must be using Python 2.7 and Mac OSX. This should also work for various Linu
 
 #####Some additional Security Setup
 
+All possible callers/receievers must be in each others contacts for Skype. Either that, or under Skype --> Preferences --> Privacy, "Allow calls from:" must be set to "Anyone". Otherwise the Client will not be able to auto-receive calls.
+
+Finally, under System Preferences --> Security & Privacy --> Accessibility make sure that skype is checked in order to ensure that the caller can automatically turn on video.
 
 
