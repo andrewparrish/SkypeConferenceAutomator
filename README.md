@@ -44,3 +44,6 @@ All possible callers/receievers must be in each others contacts for Skype. Eithe
 Finally, under System Preferences --> Security & Privacy --> Accessibility make sure that skype is checked in order to ensure that the caller can automatically turn on video.
 
 
+
+
+

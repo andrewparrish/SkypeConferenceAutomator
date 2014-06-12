@@ -25,17 +25,17 @@ def makecall():
 
 	if request.method == 'POST':
 		caller = request.form['caller']
-		reciever = request.form['receiver']
+		receiver = request.form['receiver']
 
 		call = {
 			'caller' : caller,
-			'receiver' : reciever,
+			'receiver' : receiver,
 			'status' : 'live'
 		}
 
 		call = db['calls'].insert(call)
 
-		acc = config.accesses[reciever]
+		acc = config.accesses[receiver]
 		calleracc = config.accesses[caller]
 
 		if not config.autoanswer:
@@ -70,8 +70,8 @@ def calls():
 @app.route('/endcall/<caller>')
 def endcall(caller):
 
-	call = db['calls'].find({'caller' : caller})
-	acc = config.accesses[call['reciever']]
+	call = db['calls'].find_one({'caller' : caller})
+	acc = config.accesses[call['receiver']]
 	calleracc = config.accesses[call['caller']]
 
 	command = "arch -i386 /usr/bin/python2.7 skype/endcall.py \'%s\'" % acc['skypename']
@@ -87,9 +87,12 @@ def endcall(caller):
 @app.route('/holdcall/<caller>')
 def holdcall(caller):
 
-	call = db['calls'].find({'caller' : caller})
-	acc = config.accesses[call['reciever']]
+	call = db['calls'].find_one({'caller' : caller})
+	acc = config.accesses[call['receiver']]
 	calleracc = config.accesses[call['caller']]
+
+	caller = call['caller']
+	receiver = call['receiver']
 
 	command = "arch -i386 /usr/bin/python2.7 skype/holdcall.py \'%s\'" % acc['skypename']
 	executeorder(calleracc, command)
@@ -97,7 +100,7 @@ def holdcall(caller):
 	if call['status'] == 'live':
 		call = {
 			'caller' : caller,
-			'receiver' : reciever,
+			'receiver' : receiver,
 			'status' : 'hold'
 		}
 		db['calls'].remove({'caller': caller})
@@ -105,7 +108,7 @@ def holdcall(caller):
 	else:
 		call = {
 			'caller' : caller,
-			'receiver' : reciever,
+			'receiver' : receiver,
 			'status' : 'live'
 		}
 		db['calls'].remove({'caller': caller})

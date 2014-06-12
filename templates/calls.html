@@ -21,7 +21,7 @@
 		<label>Receiver: {{ call['receiver'] }}   </lable>
 		<label>Status: {{ call['status']  }}  </label>
 		<a class="button" href="/endcall/{{ call['caller'] }}">End Call</a>
-		<a class="button" href="/holdcall/{{ call['caller'] }}">Hold Call</a>
+		<a class="button" href="/holdcall/{{ call['caller'] }}">Hold/Resume Call</a>
 	</div>
 	{% endfor %}
 </body>
